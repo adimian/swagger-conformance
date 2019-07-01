@@ -1,18 +1,14 @@
-"""
-Main high-level entrypoints for validating swagger conformance.
-"""
-import logging
-import traceback
+import os
+import sys
+import tempfile
+import threading
+from urllib.error import URLError
 
 import hypothesis
+from colorama import init, Fore, Back, Style
 
 from .client import Client
 from .strategies import StrategyFactory
-
-__all__ = ["api_conformance_test", "operation_conformance_test"]
-
-
-log = logging.getLogger(__name__)
 
 
 def api_conformance_test(
@@ -23,77 +19,81 @@ def api_conformance_test(
     password=None,
     token=None,
 ):
-    """Basic test of the conformance of the API defined by the given schema.
 
-    :param schema_path: The path to / URL of the schema to validate.
-    :type schema_path: str
-    :param num_tests_per_op: How many tests to run of each API operation.
-    :type num_tests_per_op: int
-    :param cont_on_err: Validate all operations, or drop out on first error.
-    :type cont_on_err: bool
-    """
-    client = Client(schema_path, username=username, password=password, token=token)
-    log.debug("Expanded endpoints as: %r", client.api)
+    init()
 
-    hit_errors = []
+    try:
+        client = Client(schema_path, username=username, password=password, token=token)
+    except URLError as exc:
+        print(Fore.WHITE + Back.RED + str(exc) + Style.RESET_ALL)
+        sys.exit(1)
+
+    print(Fore.BLUE + "Connecting to {}".format(schema_path) + Style.RESET_ALL)
+    print(Fore.BLUE + "Swagger client... " + Fore.GREEN + " ok" + Style.RESET_ALL)
+
+    fd, watchdog_filename = tempfile.mkstemp()
+    os.close(fd)
+    os.remove(watchdog_filename)
+
     for operation in client.api.operations():
-        try:
-            operation_conformance_test(client, operation, num_tests_per_op)
-        except Exception:  # pylint: disable=broad-except
-            log.exception("Validation failed of operation: %r", operation)
-            hit_errors.append(traceback.format_exc())
-            if not cont_on_err:
-                raise
-
-    if hit_errors:
-        raise Exception(
-            "{} operation(s) failed conformance tests - check "
-            "output in logging and tracebacks below for "
-            "details\n{}".format(len(hit_errors), "\n".join(hit_errors))
+        operation_conformance_test(
+            client, operation, num_tests_per_op, cont_on_err, watchdog_filename
         )
 
 
-def operation_conformance_test(client, operation, num_tests=20):
-    """Test the conformance of the given operation using the provided client.
+def operation_conformance_test(
+    client, operation, num_tests, cont_on_err, watchdog_filename
+):
 
-    :param client: The client to use to access the API.
-    :type client: client.Client
-    :param operation: The operation to test.
-    :type operation: schema.Operation
-    :param num_tests: How many tests to run of each API operation.
-    :type num_tests: int
-    """
-    log.info("Testing operation: %r", operation)
+    print(
+        Fore.BLUE
+        + "\n["
+        + Fore.YELLOW
+        + operation.method
+        + Fore.BLUE
+        + "] "
+        + Fore.CYAN
+        + operation.path
+        + Style.RESET_ALL
+    )
     strategy = operation.parameters_strategy(StrategyFactory())
 
     @hypothesis.settings(
         max_examples=num_tests,
         suppress_health_check=[hypothesis.HealthCheck.too_slow],
         deadline=None,
+        verbosity=hypothesis.Verbosity.quiet,
     )
     @hypothesis.given(strategy)
-    def single_operation_test(client, operation, params):
-        """Test an operation fully.
+    def single_operation_test(
+        client, operation, cont_on_err, watchdog_filename, params
+    ):
+        success = "\t[" + Fore.GREEN + " ok " + Style.RESET_ALL + "] "
+        failed = "\t[" + Fore.RED + " fail " + Style.RESET_ALL + "] "
 
-        :param client: The client to use to access the API.
-        :type client: client.Client
-        :param operation: The operation to test.
-        :type operation: schema.Operation
-        :param params: The dictionary of parameters to use on the operation.
-        :type params: dict
-        """
-        log.info("Testing with params: %r", params)
+        root = "Testing with params: {}".format(params) + Style.RESET_ALL
         result = client.request(operation, params)
-        assert (
-            result.status in operation.response_codes
-        ), "Response code {} not in {}".format(result.status, operation.response_codes)
-        # assert any(
-        #     entry.strip().startswith("application/json")
-        #     for entry in result.headers["Content-Type"]
-        # ), "'application/json' not in 'Content-Type' header: {}".format(
-        #     result.headers["Content-Type"]
-        # )
 
-    # Run the test, which takes one less parameter than expected due to the
-    # hypothesis decorator providing the last one.
-    single_operation_test(client, operation)  # pylint: disable=E1120
+        if result.status in operation.response_codes:
+            print(success + root)
+        else:
+            outcome = (
+                Fore.RED
+                + "\n\tresponse code {} not in {}".format(
+                    result.status, operation.response_codes
+                )
+                + Style.RESET_ALL
+            )
+            print(failed + root + outcome)
+            if not cont_on_err:
+                # we use a file as a signal between inside and outside of
+                # hypothesis since otherwise we'd see hypothesis extended help
+                # but this is not what we're looking for here
+                with open(watchdog_filename, "w"):
+                    pass
+
+    single_operation_test(client, operation, cont_on_err, watchdog_filename)
+
+    if os.path.isfile(watchdog_filename):
+        print(Fore.RED + "Stopping after first failure" + Style.RESET_ALL)
+        sys.exit(1)
