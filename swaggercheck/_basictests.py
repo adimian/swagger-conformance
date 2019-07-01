@@ -15,7 +15,14 @@ __all__ = ["api_conformance_test", "operation_conformance_test"]
 log = logging.getLogger(__name__)
 
 
-def api_conformance_test(schema_path, num_tests_per_op=20, cont_on_err=True):
+def api_conformance_test(
+    schema_path,
+    num_tests_per_op=20,
+    cont_on_err=True,
+    username=None,
+    password=None,
+    token=None,
+):
     """Basic test of the conformance of the API defined by the given schema.
 
     :param schema_path: The path to / URL of the schema to validate.
@@ -25,7 +32,7 @@ def api_conformance_test(schema_path, num_tests_per_op=20, cont_on_err=True):
     :param cont_on_err: Validate all operations, or drop out on first error.
     :type cont_on_err: bool
     """
-    client = Client(schema_path)
+    client = Client(schema_path, username=username, password=password, token=token)
     log.debug("Expanded endpoints as: %r", client.api)
 
     hit_errors = []

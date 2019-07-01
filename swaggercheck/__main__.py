@@ -33,9 +33,16 @@ def main():
         help="continue on error",
     )
 
+    parser.add_argument("-u", "--username", help="username (implies 'basic' auth)")
+    parser.add_argument("-p", "--password", help="password (implies 'basic' auth)")
+    parser.add_argument("-k", "--token", help="api key token (implies 'apiKey' auth)")
+
     parsed_args = parser.parse_args()
     api_conformance_test(
         parsed_args.schema_path,
         num_tests_per_op=parsed_args.num_tests_per_op,
         cont_on_err=parsed_args.cont_on_err,
+        username=parsed_args.username,
+        password=parsed_args.password,
+        token=parsed_args.token,
     )

@@ -30,8 +30,20 @@ class Client:
     :type codec: codec.CodecFactory or None
     """
 
-    def __init__(self, schema_path, codec=None):
+    def __init__(
+        self, schema_path, codec=None, username=None, password=None, token=None
+    ):
         self._schema_path = schema_path
+
+        self._username = username
+        self._password = password
+        self._token = token
+
+        self._auth_creds = None
+        if username or password:
+            self._auth_creds = ("basic", (username, password))
+        elif token:
+            self._auth_creds = ("apiKey", token)
 
         if codec is None:
             codec = CodecFactory()
@@ -68,7 +80,8 @@ class Client:
         :rtype: pyswagger.io.Response
         """
         security = Security(self._app)
-        security.update_with("basic", ("7u89lpr6bb4zdzzeqvske68kc8o56p9h", "demo"))
+        if self._auth_creds:
+            security.update_with(*self._auth_creds)
         client = PyswaggerClient(security)
 
         result = client.request(
