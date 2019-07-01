@@ -38,11 +38,12 @@ def api_conformance_test(schema_path, num_tests_per_op=20, cont_on_err=True):
             if not cont_on_err:
                 raise
 
-    if len(hit_errors) > 0:
-        raise Exception("{} operation(s) failed conformance tests - check "
-                        "output in logging and tracebacks below for "
-                        "details\n{}".format(len(hit_errors),
-                                             '\n'.join(hit_errors)))
+    if hit_errors:
+        raise Exception(
+            "{} operation(s) failed conformance tests - check "
+            "output in logging and tracebacks below for "
+            "details\n{}".format(len(hit_errors), "\n".join(hit_errors))
+        )
 
 
 def operation_conformance_test(client, operation, num_tests=20):
@@ -60,7 +61,9 @@ def operation_conformance_test(client, operation, num_tests=20):
 
     @hypothesis.settings(
         max_examples=num_tests,
-        suppress_health_check=[hypothesis.HealthCheck.too_slow])
+        suppress_health_check=[hypothesis.HealthCheck.too_slow],
+        deadline=None,
+    )
     @hypothesis.given(strategy)
     def single_operation_test(client, operation, params):
         """Test an operation fully.
@@ -74,13 +77,15 @@ def operation_conformance_test(client, operation, num_tests=20):
         """
         log.info("Testing with params: %r", params)
         result = client.request(operation, params)
-        assert result.status in operation.response_codes, \
-            "Response code {} not in {}".format(result.status,
-                                                operation.response_codes)
-        assert any(entry.strip().startswith('application/json') \
-                   for entry in result.headers['Content-Type']), \
-            "'application/json' not in 'Content-Type' header: {}" \
-            .format(result.headers['Content-Type'])
+        assert (
+            result.status in operation.response_codes
+        ), "Response code {} not in {}".format(result.status, operation.response_codes)
+        # assert any(
+        #     entry.strip().startswith("application/json")
+        #     for entry in result.headers["Content-Type"]
+        # ), "'application/json' not in 'Content-Type' header: {}".format(
+        #     result.headers["Content-Type"]
+        # )
 
     # Run the test, which takes one less parameter than expected due to the
     # hypothesis decorator providing the last one.

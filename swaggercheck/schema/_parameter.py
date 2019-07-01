@@ -21,8 +21,8 @@ class Parameter:
 
     def __repr__(self):
         return "{}(name={!r}, type={!r}, format={!r}, required={!r})".format(
-            self.__class__.__name__, self.name, self.type, self.format,
-            self.required)
+            self.__class__.__name__, self.name, self.type, self.format, self.required
+        )
 
     def strategy(self, value_factory):
         """Generate a hypothesis strategy representing this parameter.

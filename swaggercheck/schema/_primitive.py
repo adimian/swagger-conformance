@@ -36,16 +36,16 @@ class Primitive:
     @staticmethod
     def _resolve(definition):
         """If the schema for this Primitive is a reference, dereference it."""
-        while getattr(definition, 'ref_obj', None) is not None:
+        while getattr(definition, "ref_obj", None) is not None:
             log.debug("New definition is: %r", definition)
             definition = definition.ref_obj
 
         return definition
 
     def __repr__(self):
-        return "{}(name={}, type={})".format(self.__class__.__name__,
-                                             self.name,
-                                             self.type)
+        return "{}(name={}, type={})".format(
+            self.__class__.__name__, self.name, self.type
+        )
 
     @property
     def name(self):
@@ -53,7 +53,7 @@ class Primitive:
 
         :rtype: str or None
         """
-        return getattr(self._swagger_definition, 'name', None)
+        return getattr(self._swagger_definition, "name", None)
 
     @property
     def type(self):
@@ -81,7 +81,7 @@ class Primitive:
         # then the default is that the value is required.
         # This also clashes with the name of the list of required fields in a
         # schema object, so only use the value if it's a Boolean.
-        required = getattr(self._swagger_definition, 'required', None)
+        required = getattr(self._swagger_definition, "required", None)
         return required if isinstance(required, bool) else True
 
     @property
@@ -91,7 +91,7 @@ class Primitive:
 
         :rtype: str or None
         """
-        return getattr(self._swagger_definition, 'in', None)
+        return getattr(self._swagger_definition, "in", None)
 
     @property
     def items(self):
@@ -109,11 +109,12 @@ class Primitive:
         :rtype: dict(str, Primitive) or None
         """
         # This attribute is only present on `Schema` objects.
-        if not hasattr(self._swagger_definition, 'properties'):
+        if not hasattr(self._swagger_definition, "properties"):
             return None  # pragma: no cover - means called on wrong obect type
-        return {prop_name: self.__class__(prop_value)
-                for prop_name, prop_value in
-                self._swagger_definition.properties.items()}
+        return {
+            prop_name: self.__class__(prop_value)
+            for prop_name, prop_value in self._swagger_definition.properties.items()
+        }
 
     @property
     def required_properties(self):
@@ -124,7 +125,7 @@ class Primitive:
         # This clashes with the name of the bool indicating if this is a
         # required parameter on a paramter object, so only use the value if
         # it's a list.
-        reqd_props = getattr(self._swagger_definition, 'required', None)
+        reqd_props = getattr(self._swagger_definition, "required", None)
         return set(reqd_props) if isinstance(reqd_props, list) else None
 
     @property
@@ -134,10 +135,9 @@ class Primitive:
         :rtype: bool or None
         """
         # This attribute is only present on `Schema` objects.
-        if not hasattr(self._swagger_definition, 'additionalProperties'):
+        if not hasattr(self._swagger_definition, "additionalProperties"):
             return None  # pragma: no cover - means called on wrong obect type
-        return self._swagger_definition.additionalProperties not in (None,
-                                                                     False)
+        return self._swagger_definition.additionalProperties not in (None, False)
 
     @property
     def maxProperties(self):
@@ -145,7 +145,7 @@ class Primitive:
 
         :rtype: int or None
         """
-        if not hasattr(self._swagger_definition, 'maxProperties'):
+        if not hasattr(self._swagger_definition, "maxProperties"):
             return None  # pragma: no cover - means called on wrong obect type
         return self._swagger_definition.maxProperties
 
@@ -155,7 +155,7 @@ class Primitive:
 
         :rtype: int or None
         """
-        if not hasattr(self._swagger_definition, 'minProperties'):
+        if not hasattr(self._swagger_definition, "minProperties"):
             return None  # pragma: no cover - means called on wrong obect type
         return self._swagger_definition.minProperties
 

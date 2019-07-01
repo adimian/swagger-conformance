@@ -25,8 +25,9 @@ class Api:
         self._client = client
         self._app = client._pyswagger_app  # pylint: disable=protected-access
 
-        self._endpoints_map = {path: self._method_to_op_map(path)
-                               for path in self._app.root.paths}
+        self._endpoints_map = {
+            path: self._method_to_op_map(path) for path in self._app.root.paths
+        }
 
     @property
     def endpoints(self):
@@ -50,9 +51,11 @@ class Api:
 
         :rtype: Generator(schema.Operation)
         """
-        return (self.endpoints[endpoint][operation_type]
-                for endpoint in self.endpoints
-                for operation_type in self.endpoints[endpoint])
+        return (
+            self.endpoints[endpoint][operation_type]
+            for endpoint in self.endpoints
+            for operation_type in self.endpoints[endpoint]
+        )
 
     def _method_to_op_map(self, path):
         log.debug("Expanding path: %r", path)
@@ -64,6 +67,11 @@ class Api:
             operation = getattr(operations_defs, operation_name)
             if operation is not None:
                 log.debug("Have operation")
+
+                operation._Operation__url = "/" + operation._Operation__url.replace(
+                    "//", "/"
+                )
+
                 operations_map[operation_name] = Operation(operation)
 
         log.debug("Expanded path as: %r", operations_map)

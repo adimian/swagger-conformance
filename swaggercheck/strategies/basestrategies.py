@@ -9,9 +9,17 @@ import io
 
 import hypothesis.strategies as hy_st
 
-__all__ = ["json", "dates", "times", "datetimes", "file_objects", "files",
-           "merge_dicts_strategy", "merge_dicts_max_size_strategy",
-           "merge_optional_dict_strategy"]
+__all__ = [
+    "json",
+    "dates",
+    "times",
+    "datetimes",
+    "file_objects",
+    "files",
+    "merge_dicts_strategy",
+    "merge_dicts_max_size_strategy",
+    "merge_optional_dict_strategy",
+]
 
 
 log = logging.getLogger(__name__)
@@ -29,14 +37,16 @@ def json(value_limit=5):
     return hy_st.recursive(
         hy_st.floats() | hy_st.booleans() | hy_st.text() | hy_st.none(),
         lambda children: hy_st.dictionaries(hy_st.text(), children),
-        max_leaves=value_limit)
+        max_leaves=value_limit,
+    )
 
 
 def dates():
     """Hypothesis strategy for generating `datetime.date` values."""
     return hy_st.builds(
         datetime.date.fromordinal,
-        hy_st.integers(min_value=1, max_value=datetime.date.max.toordinal()))
+        hy_st.integers(min_value=1, max_value=datetime.date.max.toordinal()),
+    )
 
 
 def times():
@@ -46,7 +56,8 @@ def times():
         hour=hy_st.integers(min_value=0, max_value=23),
         minute=hy_st.integers(min_value=0, max_value=59),
         second=hy_st.integers(min_value=0, max_value=59),
-        microsecond=hy_st.integers(min_value=0, max_value=999999))
+        microsecond=hy_st.integers(min_value=0, max_value=999999),
+    )
 
 
 def datetimes():
@@ -64,14 +75,16 @@ def files():
     handles to populate `file` format parameters.
 
     Generated values take the format: `dict('data': <file object>)`"""
-    return file_objects().map(lambda x: {'data': x})
+    return file_objects().map(lambda x: {"data": x})
 
 
 def merge_dicts_strategy(dict_strat_1, dict_strat_2):
     """Strategy merging two strategies producting dicts into one."""
-    return hy_st.builds(lambda x, y: dict((list(x.items()) + list(y.items()))),
-                        dict_strat_1,
-                        dict_strat_2)
+    return hy_st.builds(
+        lambda x, y: dict((list(x.items()) + list(y.items()))),
+        dict_strat_1,
+        dict_strat_2,
+    )
 
 
 def merge_optional_dict_strategy(required_fields, optional_fields):
@@ -85,13 +98,20 @@ def merge_optional_dict_strategy(required_fields, optional_fields):
     # Create a strategy for a set of keys from the optional dict strategy, then
     # a strategy to build those back into a dictionary.
     # Finally, merge the strategy of selected optionals with the required one.
-    opt_keys = hy_st.sets(hy_st.sampled_from(list(optional_fields.keys())))
-    selected_optionals = hy_st.builds(
-        lambda dictionary, keys: {key: dictionary[key] for key in keys},
-        hy_st.fixed_dictionaries(optional_fields),
-        opt_keys)
-    result = merge_dicts_strategy(hy_st.fixed_dictionaries(required_fields),
-                                  selected_optionals)
+
+    if optional_fields:
+        opt_keys = hy_st.sets(hy_st.sampled_from(list(optional_fields)))
+        selected_optionals = hy_st.builds(
+            lambda dictionary, keys: {key: dictionary[key] for key in keys},
+            hy_st.fixed_dictionaries(optional_fields),
+            opt_keys,
+        )
+
+        result = merge_dicts_strategy(
+            hy_st.fixed_dictionaries(required_fields), selected_optionals
+        )
+    else:
+        result = hy_st.fixed_dictionaries(required_fields)
     return result
 
 
@@ -107,7 +127,6 @@ def merge_dicts_max_size_strategy(dict1, dict2, max_size):
     # second containing a reduced number of keys if that would take us over the
     # max size.
     result = hy_st.builds(
-        lambda x, y: dict((list(x.items()) + list(y.items()))[:max_size]),
-        dict1,
-        dict2)
+        lambda x, y: dict((list(x.items()) + list(y.items()))[:max_size]), dict1, dict2
+    )
     return result

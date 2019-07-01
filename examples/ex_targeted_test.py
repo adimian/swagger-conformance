@@ -15,21 +15,21 @@ bug is in the code in this file, so you can ignore the code in
 `datastore_api.py`.**
 """
 import hypothesis
-import swaggerconformance
+import swaggercheck
 
 # Create the client to access the API, and templates for the API operations.
 # (Add a try/except to try and catch when a user hasn't started the server).
 try:
-    schema_url = 'http://127.0.0.1:5000/api/schema'
-    client = swaggerconformance.client.SwaggerClient(schema_url)
+    schema_url = "http://127.0.0.1:5000/api/schema"
+    client = swaggercheck.client.SwaggerClient(schema_url)
 except:
     raise Exception("Failed to load API schema - have you started the server?")
 
-api_template = swaggerconformance.apitemplates.APITemplate(client)
+api_template = swaggercheck.apitemplates.APITemplate(client)
 
 # Get references to the operations we'll use for testing, and strategies for
 # generating inputs to those operations.
-value_factory = swaggerconformance.valuetemplates.ValueFactory()
+value_factory = swaggercheck.valuetemplates.ValueFactory()
 put_operation = api_template.endpoints["/apps/{appid}"]["put"]
 put_strategy = put_operation.hypothesize_parameters(value_factory)
 get_operation = api_template.endpoints["/apps/{appid}"]["get"]
@@ -41,15 +41,15 @@ get_strategy = get_operation.hypothesize_parameters(value_factory)
 # final arguments to the function.
 @hypothesis.settings(max_examples=200)
 @hypothesis.given(put_strategy, get_strategy)
-def single_operation_test(client, put_operation, get_operation,
-                          put_params, get_params):
+def single_operation_test(client, put_operation, get_operation, put_params, get_params):
     """PUT a new app with some data, then GET the data again and verify it
     matches what was just sent in."""
     # Use the client to make a request with the generated parameters, and
     # assert this returns a valid response.
     response = client.request(put_operation, put_params)
-    assert response.status in put_operation.response_codes, \
-        "{} not in {}".format(response.status, put_operation.response_codes)
+    assert response.status in put_operation.response_codes, "{} not in {}".format(
+        response.status, put_operation.response_codes
+    )
 
     # The parameters are just dictionaries with string name keys and correct
     # format values.
@@ -67,9 +67,12 @@ def single_operation_test(client, put_operation, get_operation,
     # `EXPLANATION OF BUG` section at the end of the file for why!
     assert out_data == in_data, "{!r} != {!r}".format(out_data, in_data)
 
+
 # Finally, remember to call the test function to run the tests, and that
 # hypothesis provides the generated parameter arguments.
-single_operation_test(client, put_operation, get_operation) # pylint: disable=I0011,E1120
+single_operation_test(
+    client, put_operation, get_operation
+)  # pylint: disable=I0011,E1120
 
 
 # EXPLANATION OF BUG

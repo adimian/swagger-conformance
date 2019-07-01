@@ -20,9 +20,9 @@ def string_primitive_strategy(swagger_definition, factory):
     :type swagger_definition: schema.Primitive
     :rtype: PrimitiveStrategy
     """
-    if swagger_definition.location == 'path':
+    if swagger_definition.location == "path":
         template = ps.URLPathStringStrategy(swagger_definition, factory)
-    elif swagger_definition.location == 'header':
+    elif swagger_definition.location == "header":
         template = ps.HTTPHeaderStringStrategy(swagger_definition, factory)
     else:
         template = ps.StringStrategy(swagger_definition, factory)
@@ -34,25 +34,29 @@ class StrategyFactory:
 
     def __init__(self):
         self._map = {
-            'boolean': defaultdict(lambda: ps.BooleanStrategy,
-                                   [(None, ps.BooleanStrategy)]),
-            'integer': defaultdict(lambda: ps.IntegerStrategy,
-                                   [(None, ps.IntegerStrategy)]),
-            'number': defaultdict(lambda: ps.FloatStrategy,
-                                  [(None, ps.FloatStrategy)]),
-            'file': defaultdict(lambda: ps.FileStrategy,
-                                [(None, ps.FileStrategy)]),
-            'array': defaultdict(lambda: ps.ArrayStrategy,
-                                 [(None, ps.ArrayStrategy)]),
-            'object': defaultdict(lambda: ps.ObjectStrategy,
-                                  [(None, ps.ObjectStrategy)]),
-            'string': defaultdict(lambda: string_primitive_strategy,
-                                  [(None, string_primitive_strategy),
-                                   ('byte', ps.BytesStrategy),
-                                   ('date', ps.DateStrategy),
-                                   ('date-time', ps.DateTimeStrategy),
-                                   ('mask', ps.XFieldsHeaderStringStrategy),
-                                   ('uuid', ps.UUIDStrategy)])
+            "boolean": defaultdict(
+                lambda: ps.BooleanStrategy, [(None, ps.BooleanStrategy)]
+            ),
+            "integer": defaultdict(
+                lambda: ps.IntegerStrategy, [(None, ps.IntegerStrategy)]
+            ),
+            "number": defaultdict(lambda: ps.FloatStrategy, [(None, ps.FloatStrategy)]),
+            "file": defaultdict(lambda: ps.FileStrategy, [(None, ps.FileStrategy)]),
+            "array": defaultdict(lambda: ps.ArrayStrategy, [(None, ps.ArrayStrategy)]),
+            "object": defaultdict(
+                lambda: ps.ObjectStrategy, [(None, ps.ObjectStrategy)]
+            ),
+            "string": defaultdict(
+                lambda: string_primitive_strategy,
+                [
+                    (None, string_primitive_strategy),
+                    ("byte", ps.BytesStrategy),
+                    ("date", ps.DateStrategy),
+                    ("date-time", ps.DateTimeStrategy),
+                    ("mask", ps.XFieldsHeaderStringStrategy),
+                    ("uuid", ps.UUIDStrategy),
+                ],
+            ),
         }
 
     def _get(self, type_str, format_str):
@@ -76,7 +80,8 @@ class StrategyFactory:
         value = creator(swagger_definition, self)
 
         assert value is not None, "Unsupported type, format: {}, {}".format(
-            swagger_definition.type, swagger_definition.format)
+            swagger_definition.type, swagger_definition.format
+        )
 
         return value
 

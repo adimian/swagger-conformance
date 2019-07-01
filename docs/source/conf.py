@@ -14,27 +14,26 @@ serve to show the default.
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../../'))
+
+sys.path.insert(0, os.path.abspath("../../"))
 
 import shutil
 from recommonmark.parser import CommonMarkParser
 
 # Put other docs files into this source location.
-shutil.copyfile('../../readme.md', 'readme.md')
-shutil.copyfile('../../examples/readme.md', 'examples.md')
+shutil.copyfile("../../readme.md", "readme.md")
+shutil.copyfile("../../examples/readme.md", "examples.md")
 
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
 #
-needs_sphinx = '1.7'
+needs_sphinx = "1.7"
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc',
-              'sphinx.ext.intersphinx',
-              'sphinx.ext.viewcode']
+extensions = ["sphinx.ext.autodoc", "sphinx.ext.intersphinx", "sphinx.ext.viewcode"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = []
@@ -43,27 +42,25 @@ templates_path = []
 # You can specify multiple suffix as a list of string:
 #
 # source_suffix = ['.rst', '.md']
-source_suffix = ['.rst', '.md']
+source_suffix = [".rst", ".md"]
 
 # Support markdown docs.
-source_parsers = {
-    '.md': CommonMarkParser,
-}
+source_parsers = {".md": CommonMarkParser}
 
 # The master toctree document.
-master_doc = 'index'
+master_doc = "index"
 
 # General information about the project.
-project = 'swaggerconformance'
-copyright = '2017, olipratt'
-author = 'olipratt'
+project = "swaggerconformance"
+copyright = "2017, olipratt"
+author = "olipratt"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-version = '0.2.5'
+version = "0.2.5"
 # The full version, including alpha/beta/rc tags.
 release = version
 
@@ -77,10 +74,10 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = "sphinx"
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
@@ -94,7 +91,7 @@ suppress_warnings = ["image.nonlocal_uri"]
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
+html_theme = "sphinx_rtd_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -118,7 +115,7 @@ html_static_path = []
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'swaggerconformancedoc'
+htmlhelp_basename = "swaggerconformancedoc"
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -127,15 +124,12 @@ latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
     #
     # 'papersize': 'letterpaper',
-
     # The font size ('10pt', '11pt' or '12pt').
     #
     # 'pointsize': '10pt',
-
     # Additional stuff for the LaTeX preamble.
     #
     # 'preamble': '',
-
     # Latex figure (float) alignment
     #
     # 'figure_align': 'htbp',
@@ -145,8 +139,13 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'swaggerconformance.tex', 'swaggerconformance Documentation',
-     'olipratt', 'manual'),
+    (
+        master_doc,
+        "swaggerconformance.tex",
+        "swaggerconformance Documentation",
+        "olipratt",
+        "manual",
+    )
 ]
 
 
@@ -155,8 +154,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'swaggerconformance', 'swaggerconformance Documentation',
-     [author], 1)
+    (master_doc, "swaggerconformance", "swaggerconformance Documentation", [author], 1)
 ]
 
 
@@ -166,33 +164,43 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'swaggerconformance', 'swaggerconformance Documentation',
-     author, 'swaggerconformance', 'One line description of project.',
-     'Miscellaneous'),
+    (
+        master_doc,
+        "swaggerconformance",
+        "swaggerconformance Documentation",
+        author,
+        "swaggerconformance",
+        "One line description of project.",
+        "Miscellaneous",
+    )
 ]
 
 
 # References to other documentation for intersphinx to link to - typically the
 # standard library plus any dependent 3rd party libraries.
-intersphinx_mapping = {'https://docs.python.org/3': None,
-                       # 'http://hypothesis.readthedocs.io/en/latest/': None,
-                       'http://pyswagger.readthedocs.io/en/latest/': None}
+intersphinx_mapping = {
+    "https://docs.python.org/3": None,
+    # 'http://hypothesis.readthedocs.io/en/latest/': None,
+    "http://pyswagger.readthedocs.io/en/latest/": None,
+}
 
 # The name of a reST role (builtin or Sphinx extension) to use as the default
 # role, that is, for text marked up `like this`. 'py:obj' means 'some python
 # object of unspecified type' so that Sphinx will try and match it to some
 # available class/function/constant/etc.
-default_role = 'py:obj'
+default_role = "py:obj"
 
 # Generate API documentation as part of the standard docs build.
 def run_apidoc(_):
-	from sphinx.ext.apidoc import main
-	import os
-	import sys
-	cur_dir = os.path.abspath(os.path.dirname(__file__))
-	package_dir = os.path.join(cur_dir, "../..", project)
-	api_out_dir = os.path.join(cur_dir, "modules")
-	main(['--separate', '--force', '--no-toc', '-o', api_out_dir, package_dir])
+    from sphinx.ext.apidoc import main
+    import os
+    import sys
+
+    cur_dir = os.path.abspath(os.path.dirname(__file__))
+    package_dir = os.path.join(cur_dir, "../..", project)
+    api_out_dir = os.path.join(cur_dir, "modules")
+    main(["--separate", "--force", "--no-toc", "-o", api_out_dir, package_dir])
+
 
 def setup(app):
-	app.connect('builder-inited', run_apidoc)
+    app.connect("builder-inited", run_apidoc)

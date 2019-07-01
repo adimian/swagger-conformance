@@ -36,17 +36,18 @@ class Client:
         if codec is None:
             codec = CodecFactory()
 
-        self._prim_factory = \
-            codec._pyswagger_factory  # pylint: disable=protected-access
+        self._prim_factory = (
+            codec._pyswagger_factory
+        )  # pylint: disable=protected-access
 
         self._app = App.load(schema_path, prim=self._prim_factory)
+
         self._app.prepare()
 
         self._api = Api(self)
 
     def __repr__(self):
-        return "{}(schema_path={!r})".format(self.__class__.__name__,
-                                             self._schema_path)
+        return "{}(schema_path={!r})".format(self.__class__.__name__, self._schema_path)
 
     @property
     def api(self):
@@ -66,8 +67,13 @@ class Client:
 
         :rtype: pyswagger.io.Response
         """
-        client = PyswaggerClient(Security(self._app))
-        result = client.request(operation._pyswagger_operation(**parameters))  # pylint: disable=protected-access
+        security = Security(self._app)
+        security.update_with("basic", ("7u89lpr6bb4zdzzeqvske68kc8o56p9h", "demo"))
+        client = PyswaggerClient(security)
+
+        result = client.request(
+            operation._pyswagger_operation(**parameters)
+        )  # pylint: disable=protected-access
 
         return Response(result)
 

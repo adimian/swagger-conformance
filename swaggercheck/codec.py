@@ -33,8 +33,8 @@ class CodecFactory:
         # though it does seem valid for a spec to not have one.
         # We work around this by adding support for these types without format.
         # See here: https://github.com/mission-liao/pyswagger/issues/65
-        self._factory.register('integer', None, create_int, validate_int)
-        self._factory.register('number', None, create_float, validate_float)
+        self._factory.register("integer", None, create_int, validate_int)
+        self._factory.register("number", None, create_float, validate_float)
 
     def register(self, type_str, format_str, creator):
         """Register a new creator for objects of the given type and format.
@@ -58,8 +58,7 @@ class CodecFactory:
         """
         # Map from the internal pyswagger call and paramters to the one we want
         # to expose to users.
-        internal_creator = \
-            lambda obj, val, ctx: creator(Primitive(obj), val, self)
+        internal_creator = lambda obj, val, ctx: creator(Primitive(obj), val, self)
         self._factory.register(type_str, format_str, internal_creator)
 
     def produce(self, swagger_definition, value):
@@ -72,8 +71,10 @@ class CodecFactory:
                       applicable portion of JSON after `json.loads` processing,
                       or any supported input value for the relevant object.
         """
-        return self._factory.produce(swagger_definition._pyswagger_definition,  # pylint: disable=protected-access
-                                     value)
+        return self._factory.produce(
+            swagger_definition._pyswagger_definition,  # pylint: disable=protected-access
+            value,
+        )
 
     @property
     def _pyswagger_factory(self):

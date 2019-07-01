@@ -11,6 +11,7 @@ log = logging.getLogger(__name__)
 
 class CaseInsensitiveDict(dict):
     """Dictionary with case insensitive lookup of string keys."""
+
     def __getitem__(self, key):
         return {k.lower(): v for k, v in self.items()}[key.lower()]
 
