@@ -37,6 +37,9 @@ def main():
     parser.add_argument("-p", "--password", help="password (implies 'basic' auth)")
     parser.add_argument("-k", "--token", help="api key token (implies 'apiKey' auth)")
 
+    parser.add_argument("--security-name",
+                        help="force a security name if not 'basic' or 'apiKey'")
+
     parsed_args = parser.parse_args()
     api_conformance_test(
         parsed_args.schema_path,
@@ -45,4 +48,5 @@ def main():
         username=parsed_args.username,
         password=parsed_args.password,
         token=parsed_args.token,
+        security_name=parsed_args.security_name
     )

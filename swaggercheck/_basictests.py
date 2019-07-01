@@ -18,17 +18,31 @@ def api_conformance_test(
     username=None,
     password=None,
     token=None,
+    security_name=None,
 ):
 
     init()
 
+    print(Fore.BLUE + "Connecting to {}".format(schema_path) + Style.RESET_ALL)
+
     try:
-        client = Client(schema_path, username=username, password=password, token=token)
+        client = Client(
+            schema_path,
+            username=username,
+            password=password,
+            token=token,
+            security_name=security_name,
+        )
     except URLError as exc:
-        print(Fore.WHITE + Back.RED + str(exc) + Style.RESET_ALL)
+        print(
+            Fore.WHITE
+            + Back.RED
+            + "Unable to connect Swagger client: "
+            + str(exc)
+            + Style.RESET_ALL
+        )
         sys.exit(1)
 
-    print(Fore.BLUE + "Connecting to {}".format(schema_path) + Style.RESET_ALL)
     print(Fore.BLUE + "Swagger client... " + Fore.GREEN + " ok" + Style.RESET_ALL)
 
     fd, watchdog_filename = tempfile.mkstemp()

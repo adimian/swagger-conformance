@@ -31,7 +31,13 @@ class Client:
     """
 
     def __init__(
-        self, schema_path, codec=None, username=None, password=None, token=None
+        self,
+        schema_path,
+        codec=None,
+        username=None,
+        password=None,
+        token=None,
+        security_name=None,
     ):
         self._schema_path = schema_path
 
@@ -41,9 +47,11 @@ class Client:
 
         self._auth_creds = None
         if username or password:
-            self._auth_creds = ("basic", (username, password))
+            security_name = security_name or "basic"
+            self._auth_creds = (security_name, (username, password))
         elif token:
-            self._auth_creds = ("apiKey", token)
+            security_name = security_name or "apiKey"
+            self._auth_creds = (security_name, token)
 
         if codec is None:
             codec = CodecFactory()
