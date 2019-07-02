@@ -1,7 +1,6 @@
 import os
 import sys
 import tempfile
-import threading
 from urllib.error import URLError
 
 import hypothesis

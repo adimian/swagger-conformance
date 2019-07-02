@@ -1,16 +1,19 @@
-# swagger-conformance
-
-[![PyPI version](https://badge.fury.io/py/swagger-conformance.svg)](https://badge.fury.io/py/swagger-conformance)
-[![Build Status](https://travis-ci.org/olipratt/swagger-conformance.svg?branch=master)](https://travis-ci.org/olipratt/swagger-conformance)
-[![codecov](https://codecov.io/gh/olipratt/swagger-conformance/branch/master/graph/badge.svg)](https://codecov.io/gh/olipratt/swagger-conformance)
-[![docs](https://readthedocs.org/projects/swagger-conformance/badge/?version=latest)](http://swagger-conformance.readthedocs.io/en/latest/)
-
-[![PyPI Versions](https://img.shields.io/pypi/pyversions/swagger-conformance.svg)](https://pypi.python.org/pypi/swagger-conformance)
-[![PyPI License](https://img.shields.io/pypi/l/swagger-conformance.svg)](https://pypi.python.org/pypi/swagger-conformance)
+# swaggercheck
 
 You have a Swagger (aka OpenAPI) schema defining an API you provide - but does your API really conform to that schema, and does it correctly handle all valid inputs?
 
-`swaggerconformance` combines the power of `hypothesis` for property based / fuzz testing with `pyswagger` to explore all corners of your API - testing its conformance to its specification.
+`swaggercheck` combines the power of `hypothesis` for property based / fuzz testing with `pyswagger` to explore all corners of your API - testing its conformance to its specification.
+
+
+## Swagger-conformance
+
+This project is a fork of [swagger-conformance by Oliver Pratt](http://swagger-conformance.readthedocs.io/en/latest/) and contributors. 
+
+The original library worked fine, but missed several options that were important to me (such as basic authentication support from the command line), so I made an adapted version that is **breaking** the original. 
+
+I don't have plans for the moment contributing my changes upstream since it would be a significant effort to have a nice CLI and a nice embeddable library at the same time.
+
+You *could* use `swaggercheck` as a library, but the purpose of the tool is to have a nice CLI that can output shiny colors in my terminal or in during CI builds, so most design decisions will be tailored towards this goal.
 
 ## Purpose
 
@@ -18,64 +21,20 @@ A Swagger/OpenAPI Spec allows you to carefully define what things are and aren't
 
 _This is not a complete fuzz tester of your HTTP interface e.g. sending complete garbage, or to non-existent endpoints, etc. It's aiming to make sure that any valid client, using your API exactly as you specify, can't break it._
 
-## Setup
+## Installation
 
-Either install with `pip install swagger-conformance`, or manually clone this repository and from inside it install dependencies with `pip install -r requirements.txt`.
-
+    $ pip install swaggercheck
+    
 ## Usage
 
 After setup, the simplest test you can run against your API is just the following from the command line:
 
 ```bash
-python -m swaggerconformance 'http://example.com/api/schema.json'
+swaggercheck 'http://example.com/api/schema.json'
 ```
 
 where the URL should resolve to your swagger schema, or it can be a path to the file on disk.
 
-This basic test tries all your API operations looking for errors. For explanation of the results and running more thorough tests, including sequences of API calls and defining your custom data types, [see the examples](https://github.com/olipratt/swagger-conformance/tree/master/examples).
-
-## Documentation
-
-Full documentation, including the example walkthroughs mentioned above and API documentation, is [available here](http://swagger-conformance.readthedocs.io/en/latest/).
-
 ## Wait, I don't get it, what does this thing do?
 
 In short, it lets you generate example values for parameters to your Swagger API operations, make API requests using these values, and verify the responses.
-
-For example, take the standard [petstore API](http://petstore.swagger.io/) example. At the time of writing, that has an endpoint `/pet` with a `PUT` method operation that takes a relatively complicated `body` parameter.
-
-With just a little code, we can load in the swagger schema for that API, access the operation we care about, and generate example parameters for that operation:
-
-```python
->>> import swaggerconformance
->>>
->>> client = swaggerconformance.client.Client('http://petstore.swagger.io/v2/swagger.json')
->>>
->>> strategy_factory = swaggerconformance.strategies.StrategyFactory()
->>> operation = client.api.endpoints["/pet"]["put"]
->>> strategy = operation.parameters_strategy(strategy_factory)
->>> strategy.example()
-{
-  'body':{
-    'id':110339,
-    'name':'\U00052ea5\x9d\ua79d\x92\x13\U000f7c436!\U000aa3c5R\U0005b40e\n',
-    'photoUrls':[
-      '\ua9d9\U0003fb3a\x13\U00025c1c\U000974a8\u3497\U000515fa\n',
-      "\U000b38a4>*\u6683'\U0002cd8f\x0f\n"
-    ],
-    'status':'sold',
-    'category':{
-      'id':-22555826027447
-    },
-    'tags':[
-      {
-        'id':-172930,
-        'name':'\U000286df\u04dc\U00033563\u696d\U00055ba8\x89H'
-      }
-    ]
-  }
-}
->>>
-```
-
-See [the examples](https://github.com/olipratt/swagger-conformance/tree/master/examples) for more details, and how to make requests against an API using these parameter values.
