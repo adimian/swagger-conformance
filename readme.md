@@ -40,3 +40,9 @@ where the URL should resolve to your swagger schema, or it can be a path to the 
 ## Wait, I don't get it, what does this thing do?
 
 In short, it lets you generate example values for parameters to your Swagger API operations, make API requests using these values, and verify the responses.
+
+
+## SSL certificate errors
+
+If the command crashes with the following error:
+`Unable to connect Swagger client: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:847)>` and you are using Python3.6 on MacOSX, you might be interested in the following StackOverflow thread: https://stackoverflow.com/a/42334357
