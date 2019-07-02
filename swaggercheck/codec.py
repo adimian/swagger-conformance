@@ -58,9 +58,10 @@ class CodecFactory:
         """
         # Map from the internal pyswagger call and paramters to the one we want
         # to expose to users.
-        internal_creator = lambda obj, val, ctx: creator(
-            Primitive(obj), val, self
-        )
+
+        def internal_creator(obj, val, ctx):
+            return creator(Primitive(obj), val, self)
+
         self._factory.register(type_str, format_str, internal_creator)
 
     def produce(self, swagger_definition, value):

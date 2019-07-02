@@ -1,4 +1,4 @@
+colorama==0.4.1
 hypothesis>=3.4.2
 pyswagger>=0.8.38
 requests>=2.13.0
-colorama==0.4.1
