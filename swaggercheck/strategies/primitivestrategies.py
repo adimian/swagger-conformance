@@ -62,10 +62,12 @@ class NumericStrategy(PrimitiveStrategy):
     def __init__(self, swagger_definition, factory):
         super().__init__(swagger_definition, factory)
         assert not (
-            swagger_definition.exclusiveMaximum and (swagger_definition.maximum is None)
+            swagger_definition.exclusiveMaximum
+            and (swagger_definition.maximum is None)
         ), "Can't have exclusive max set and no max"
         assert not (
-            swagger_definition.exclusiveMinimum and (swagger_definition.minimum is None)
+            swagger_definition.exclusiveMinimum
+            and (swagger_definition.minimum is None)
         ), "Can't have exclusive min set and no min"
         self._maximum = swagger_definition.maximum
         self._exclusive_maximum = swagger_definition.exclusiveMaximum
@@ -91,7 +93,9 @@ class IntegerStrategy(NumericStrategy):
                 else int(self._maximum)
             )
             if self._multiple_of is not None:
-                inclusive_max = math.floor(inclusive_max / int(self._multiple_of))
+                inclusive_max = math.floor(
+                    inclusive_max / int(self._multiple_of)
+                )
         inclusive_min = self._minimum
         if inclusive_min is not None:
             inclusive_min = (
@@ -100,8 +104,12 @@ class IntegerStrategy(NumericStrategy):
                 else int(self._minimum)
             )
             if self._multiple_of is not None:
-                inclusive_min = math.ceil(inclusive_min / int(self._multiple_of))
-        strategy = hy_st.integers(min_value=inclusive_min, max_value=inclusive_max)
+                inclusive_min = math.ceil(
+                    inclusive_min / int(self._multiple_of)
+                )
+        strategy = hy_st.integers(
+            min_value=inclusive_min, max_value=inclusive_max
+        )
         if self._multiple_of is not None:
             strategy = strategy.map(lambda x: x * self._multiple_of)
 
@@ -122,7 +130,9 @@ class FloatStrategy(NumericStrategy):
             strategy = hy_st.integers(min_value=minimum, max_value=maximum)
             strategy = strategy.map(lambda x: x * self._multiple_of)
         else:
-            strategy = hy_st.floats(min_value=self._minimum, max_value=self._maximum)
+            strategy = hy_st.floats(
+                min_value=self._minimum, max_value=self._maximum
+            )
         if self._exclusive_maximum:
             strategy = strategy.filter(lambda x: x < self._maximum)
         if self._exclusive_minimum:
@@ -213,7 +223,9 @@ class HTTPHeaderStringStrategy(StringStrategy):
 
     def __init__(self, swagger_definition, factory):
         # Header values are strings but cannot contain newlines.
-        super().__init__(swagger_definition, factory, blacklist_chars=["\r", "\n"])
+        super().__init__(
+            swagger_definition, factory, blacklist_chars=["\r", "\n"]
+        )
 
     def strategy(self):
         # Header values shouldn't have surrounding whitespace.
@@ -357,7 +369,9 @@ class ObjectStrategy(PrimitiveStrategy):
         if self._additional_properties:
             # Generate enough to stay within the allowed bounds, but don't
             # generate more than a fixed maximum.
-            min_properties = 0 if self._min_properties is None else self._min_properties
+            min_properties = (
+                0 if self._min_properties is None else self._min_properties
+            )
             min_properties = max(0, min_properties - len(required_properties))
             max_properties = (
                 self.MAX_ADDITIONAL_PROPERTIES

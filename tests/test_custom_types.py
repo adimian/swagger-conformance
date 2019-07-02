@@ -50,7 +50,9 @@ class ColourObjTemplate(HexColourStrTemplate):
         return super().strategy().map(Colour)
 
 
-class SceneTemplate(swaggercheck.strategies.primitivestrategies.PrimitiveStrategy):
+class SceneTemplate(
+    swaggercheck.strategies.primitivestrategies.PrimitiveStrategy
+):
     """Template for a Scene object."""
 
     def __init__(self, swagger_definition, factory):
@@ -138,7 +140,8 @@ class SceneCodec(Scene):
         fore_def = swagger_definition.properties.get("foreground colour")
         back_def = swagger_definition.properties.get("background colour")
         super().__init__(
-            factory.produce(fore_def, fore_value), factory.produce(back_def, back_value)
+            factory.produce(fore_def, fore_value),
+            factory.produce(back_def, back_value),
         )
 
     def to_json(self):
@@ -196,13 +199,18 @@ class CustomTypeTestCase(unittest.TestCase):
 
         client = swaggercheck.client.Client(COLOUR_TYPE_SCHEMA_PATH)
         post_operation = client.api.endpoints["/example"]["post"]
-        put_operation = client.api.endpoints["/example/{int_id}/hexcolour"]["put"]
+        put_operation = client.api.endpoints["/example/{int_id}/hexcolour"][
+            "put"
+        ]
         put_strategy = put_operation.parameters_strategy(value_factory)
-        get_operation = client.api.endpoints["/example/{int_id}/intcolour"]["get"]
+        get_operation = client.api.endpoints["/example/{int_id}/intcolour"][
+            "get"
+        ]
         get_strategy = get_operation.parameters_strategy(value_factory)
 
         @hypothesis.settings(
-            max_examples=50, suppress_health_check=[hypothesis.HealthCheck.too_slow]
+            max_examples=50,
+            suppress_health_check=[hypothesis.HealthCheck.too_slow],
         )
         @hypothesis.given(put_strategy, get_strategy)
         def single_operation_test(
@@ -212,18 +220,24 @@ class CustomTypeTestCase(unittest.TestCase):
             result = client.request(post_operation, {})
             assert (
                 result.status in post_operation.response_codes
-            ), "{} not in {}".format(result.status, post_operation.response_codes)
+            ), "{} not in {}".format(
+                result.status, post_operation.response_codes
+            )
 
             int_id = result.body.id
             put_params["int_id"] = int_id
             result = client.request(put_operation, put_params)
-            assert result.status in put_operation.response_codes, "{} not in {}".format(
+            assert (
+                result.status in put_operation.response_codes
+            ), "{} not in {}".format(
                 result.status, put_operation.response_codes
             )
 
             get_params["int_id"] = int_id
             result = client.request(get_operation, get_params)
-            assert result.status in get_operation.response_codes, "{} not in {}".format(
+            assert (
+                result.status in get_operation.response_codes
+            ), "{} not in {}".format(
                 result.status, get_operation.response_codes
             )
 
@@ -231,7 +245,9 @@ class CustomTypeTestCase(unittest.TestCase):
             # may contain NAN, instances of which are not equal to one another.
             out_data = result.body.intcolour
             in_data = int(put_params["payload"]["hexcolour"].lstrip("#"), 16)
-            assert out_data == in_data, "{!r} != {!r}".format(out_data, in_data)
+            assert out_data == in_data, "{!r} != {!r}".format(
+                out_data, in_data
+            )
 
         single_operation_test(
             client, put_operation, get_operation
@@ -289,31 +305,44 @@ class ValueCodecTestCase(unittest.TestCase):
         )
 
         client = swaggercheck.client.Client(COLOUR_TYPE_SCHEMA_PATH, codec)
-        put_operation = client.api.endpoints["/example/{int_id}/intcolour"]["put"]
+        put_operation = client.api.endpoints["/example/{int_id}/intcolour"][
+            "put"
+        ]
         put_strategy = put_operation.parameters_strategy(value_factory)
-        get_operation = client.api.endpoints["/example/{int_id}/intcolour"]["get"]
+        get_operation = client.api.endpoints["/example/{int_id}/intcolour"][
+            "get"
+        ]
 
         @hypothesis.settings(
-            max_examples=50, suppress_health_check=[hypothesis.HealthCheck.too_slow]
+            max_examples=50,
+            suppress_health_check=[hypothesis.HealthCheck.too_slow],
         )
         @hypothesis.given(put_strategy)
-        def single_operation_test(client, put_operation, get_operation, put_params):
+        def single_operation_test(
+            client, put_operation, get_operation, put_params
+        ):
             """PUT an colour in hex, then GET it again as an int."""
             put_params["int_id"] = 1
             result = client.request(put_operation, put_params)
-            assert result.status in put_operation.response_codes, "{} not in {}".format(
+            assert (
+                result.status in put_operation.response_codes
+            ), "{} not in {}".format(
                 result.status, put_operation.response_codes
             )
 
             result = client.request(get_operation, {"int_id": 1})
-            assert result.status in get_operation.response_codes, "{} not in {}".format(
+            assert (
+                result.status in get_operation.response_codes
+            ), "{} not in {}".format(
                 result.status, get_operation.response_codes
             )
 
             out_data = result.body.intcolour
             assert isinstance(out_data, Colour)
             in_data = put_params["payload"]["intcolour"]
-            assert out_data == in_data, "{!r} != {!r}".format(out_data, in_data)
+            assert out_data == in_data, "{!r} != {!r}".format(
+                out_data, in_data
+            )
 
         single_operation_test(
             client, put_operation, get_operation
@@ -362,19 +391,26 @@ class ObjectCodecTestCase(unittest.TestCase):
         get_operation = client.api.endpoints["/scenes/{int_id}"]["get"]
 
         @hypothesis.settings(
-            max_examples=50, suppress_health_check=[hypothesis.HealthCheck.too_slow]
+            max_examples=50,
+            suppress_health_check=[hypothesis.HealthCheck.too_slow],
         )
         @hypothesis.given(put_strategy)
-        def single_operation_test(client, put_operation, get_operation, put_params):
+        def single_operation_test(
+            client, put_operation, get_operation, put_params
+        ):
             """PUT a scene object, then GET it again as a scene object."""
             put_params["int_id"] = 1
             result = client.request(put_operation, put_params)
-            assert result.status in put_operation.response_codes, "{} not in {}".format(
+            assert (
+                result.status in put_operation.response_codes
+            ), "{} not in {}".format(
                 result.status, put_operation.response_codes
             )
 
             result = client.request(get_operation, {"int_id": 1})
-            assert result.status in get_operation.response_codes, "{} not in {}".format(
+            assert (
+                result.status in get_operation.response_codes
+            ), "{} not in {}".format(
                 result.status, get_operation.response_codes
             )
 
@@ -382,7 +418,9 @@ class ObjectCodecTestCase(unittest.TestCase):
             self.assertIsInstance(out_data, Scene)
             in_data = put_params["payload"]
             self.assertIsInstance(in_data, Scene)
-            assert out_data == in_data, "{!r} != {!r}".format(out_data, in_data)
+            assert out_data == in_data, "{!r} != {!r}".format(
+                out_data, in_data
+            )
 
         single_operation_test(
             client, put_operation, get_operation

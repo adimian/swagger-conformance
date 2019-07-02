@@ -41,15 +41,17 @@ get_strategy = get_operation.hypothesize_parameters(value_factory)
 # final arguments to the function.
 @hypothesis.settings(max_examples=200)
 @hypothesis.given(put_strategy, get_strategy)
-def single_operation_test(client, put_operation, get_operation, put_params, get_params):
+def single_operation_test(
+    client, put_operation, get_operation, put_params, get_params
+):
     """PUT a new app with some data, then GET the data again and verify it
     matches what was just sent in."""
     # Use the client to make a request with the generated parameters, and
     # assert this returns a valid response.
     response = client.request(put_operation, put_params)
-    assert response.status in put_operation.response_codes, "{} not in {}".format(
-        response.status, put_operation.response_codes
-    )
+    assert (
+        response.status in put_operation.response_codes
+    ), "{} not in {}".format(response.status, put_operation.response_codes)
 
     # The parameters are just dictionaries with string name keys and correct
     # format values.

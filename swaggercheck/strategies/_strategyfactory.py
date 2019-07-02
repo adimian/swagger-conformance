@@ -40,9 +40,15 @@ class StrategyFactory:
             "integer": defaultdict(
                 lambda: ps.IntegerStrategy, [(None, ps.IntegerStrategy)]
             ),
-            "number": defaultdict(lambda: ps.FloatStrategy, [(None, ps.FloatStrategy)]),
-            "file": defaultdict(lambda: ps.FileStrategy, [(None, ps.FileStrategy)]),
-            "array": defaultdict(lambda: ps.ArrayStrategy, [(None, ps.ArrayStrategy)]),
+            "number": defaultdict(
+                lambda: ps.FloatStrategy, [(None, ps.FloatStrategy)]
+            ),
+            "file": defaultdict(
+                lambda: ps.FileStrategy, [(None, ps.FileStrategy)]
+            ),
+            "array": defaultdict(
+                lambda: ps.ArrayStrategy, [(None, ps.ArrayStrategy)]
+            ),
             "object": defaultdict(
                 lambda: ps.ObjectStrategy, [(None, ps.ObjectStrategy)]
             ),

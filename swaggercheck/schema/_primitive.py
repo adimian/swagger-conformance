@@ -137,7 +137,10 @@ class Primitive:
         # This attribute is only present on `Schema` objects.
         if not hasattr(self._swagger_definition, "additionalProperties"):
             return None  # pragma: no cover - means called on wrong obect type
-        return self._swagger_definition.additionalProperties not in (None, False)
+        return self._swagger_definition.additionalProperties not in (
+            None,
+            False,
+        )
 
     @property
     def maxProperties(self):

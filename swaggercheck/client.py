@@ -67,7 +67,9 @@ class Client:
         self._api = Api(self)
 
     def __repr__(self):
-        return "{}(schema_path={!r})".format(self.__class__.__name__, self._schema_path)
+        return "{}(schema_path={!r})".format(
+            self.__class__.__name__, self._schema_path
+        )
 
     @property
     def api(self):

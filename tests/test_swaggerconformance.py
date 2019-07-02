@@ -27,7 +27,9 @@ TEST_SCHEMA_DIR = osp.relpath(
 )
 TEST_SCHEMA_PATH = osp.join(TEST_SCHEMA_DIR, "test_schema.json")
 FULL_PUT_SCHEMA_PATH = osp.join(TEST_SCHEMA_DIR, "full_put_schema.json")
-ALL_CONSTRAINTS_SCHEMA_PATH = osp.join(TEST_SCHEMA_DIR, "all_constraints_schema.json")
+ALL_CONSTRAINTS_SCHEMA_PATH = osp.join(
+    TEST_SCHEMA_DIR, "all_constraints_schema.json"
+)
 PETSTORE_SCHEMA_PATH = osp.join(TEST_SCHEMA_DIR, "petstore.json")
 UBER_SCHEMA_PATH = osp.join(TEST_SCHEMA_DIR, "uber.json")
 MIRROR_REQS_SCHEMA_PATH = osp.join(TEST_SCHEMA_DIR, "mirror_requests.json")
@@ -38,7 +40,11 @@ CONTENT_TYPE_JSON = "application/json"
 def _respond_to_method(method, path, response_json, status, content_type):
     url_re = re.compile(SCHEMA_URL_BASE + path + "$")
     responses.add(
-        method, url_re, json=response_json, status=status, content_type=content_type
+        method,
+        url_re,
+        json=response_json,
+        status=status,
+        content_type=content_type,
     )
 
 
@@ -46,28 +52,36 @@ def respond_to_get(
     path, response_json=None, status=200, content_type=CONTENT_TYPE_JSON
 ):
     """Respond to a GET request to the provided path."""
-    _respond_to_method(responses.GET, path, response_json, status, content_type)
+    _respond_to_method(
+        responses.GET, path, response_json, status, content_type
+    )
 
 
 def respond_to_post(
     path, response_json=None, status=200, content_type=CONTENT_TYPE_JSON
 ):
     """Respond to a POST request to the provided path."""
-    _respond_to_method(responses.POST, path, response_json, status, content_type)
+    _respond_to_method(
+        responses.POST, path, response_json, status, content_type
+    )
 
 
 def respond_to_put(
     path, response_json=None, status=200, content_type=CONTENT_TYPE_JSON
 ):
     """Respond to a PUT request to the provided path."""
-    _respond_to_method(responses.PUT, path, response_json, status, content_type)
+    _respond_to_method(
+        responses.PUT, path, response_json, status, content_type
+    )
 
 
 def respond_to_delete(
     path, response_json=None, status=200, content_type=CONTENT_TYPE_JSON
 ):
     """Respond to a DELETE request to the provided path."""
-    _respond_to_method(responses.DELETE, path, response_json, status, content_type)
+    _respond_to_method(
+        responses.DELETE, path, response_json, status, content_type
+    )
 
 
 class APITemplateTestCase(unittest.TestCase):
@@ -84,7 +98,9 @@ class APITemplateTestCase(unittest.TestCase):
         """Test we can parse an API schema, and find all the endpoints."""
         api_template = swaggercheck.schema.Api(self.client)
         expected_endpoints = {"/schema", "/apps", "/apps/{appid}"}
-        self.assertSetEqual(set(api_template.endpoints.keys()), expected_endpoints)
+        self.assertSetEqual(
+            set(api_template.endpoints.keys()), expected_endpoints
+        )
 
     @responses.activate
     def test_endpoint_manually(self):
@@ -104,14 +120,18 @@ class APITemplateTestCase(unittest.TestCase):
 
         # The operation takes two parameters, 'appid', which is a string and
         # the special 'X-Fields' header parameter.
-        self.assertSetEqual(set(app_id_get_op.parameters.keys()), {"appid", "X-Fields"})
+        self.assertSetEqual(
+            set(app_id_get_op.parameters.keys()), {"appid", "X-Fields"}
+        )
         self.assertEqual(app_id_get_op.parameters["appid"].type, "string")
 
         # Send an example parameter in to the endpoint manually, catch the
         # request, and respond.
         params = {"appid": "test_string"}
         respond_to_get(
-            "/apps/test_string", response_json={"name": "abc", "data": {}}, status=200
+            "/apps/test_string",
+            response_json={"name": "abc", "data": {}},
+            status=200,
         )
         result = self.client.request(app_id_get_op, params)
         self.assertEqual(result.status, 200)
@@ -135,11 +155,19 @@ class BasicConformanceAPITestCase(unittest.TestCase):
         content_type_extra = "application/json; charset=utf-8"
         respond_to_get("/schema")
         respond_to_get(
-            "/apps", response_json=[{"name": "test"}], content_type=content_type_extra
+            "/apps",
+            response_json=[{"name": "test"}],
+            content_type=content_type_extra,
         )
-        respond_to_get(r"/apps/.+", status=404, content_type=content_type_extra)
-        respond_to_put(r"/apps/.+", status=204, content_type=content_type_extra)
-        respond_to_delete(r"/apps/.+", status=204, content_type=content_type_extra)
+        respond_to_get(
+            r"/apps/.+", status=404, content_type=content_type_extra
+        )
+        respond_to_put(
+            r"/apps/.+", status=204, content_type=content_type_extra
+        )
+        respond_to_delete(
+            r"/apps/.+", status=204, content_type=content_type_extra
+        )
 
         swaggercheck.api_conformance_test(TEST_SCHEMA_PATH, cont_on_err=False)
 
@@ -156,7 +184,9 @@ class ParameterTypesTestCase(unittest.TestCase):
         respond_to_put(r"/example/-?\d+", status=204)
 
         # Now just kick off the validation process.
-        swaggercheck.api_conformance_test(FULL_PUT_SCHEMA_PATH, cont_on_err=False)
+        swaggercheck.api_conformance_test(
+            FULL_PUT_SCHEMA_PATH, cont_on_err=False
+        )
 
     @responses.activate
     def test_all_constraints(self):
@@ -231,14 +261,18 @@ class ExternalExamplesTestCase(unittest.TestCase):
         respond_to_get(r"/user/(?!login).+", response_json=user)
         respond_to_put(r"/user/(?!login).+")
         respond_to_delete(r"/user/(?!login).+")
-        respond_to_get(r"/user/login\?username=.*&password=.*", response_json="example")
+        respond_to_get(
+            r"/user/login\?username=.*&password=.*", response_json="example"
+        )
         respond_to_get("/user/logout")
         respond_to_post("/user/createWithArray")
         respond_to_post("/user/createWithList")
         respond_to_put(r"/example/-?\d+")
 
         # Now just kick off the validation process.
-        swaggercheck.api_conformance_test(PETSTORE_SCHEMA_PATH, cont_on_err=False)
+        swaggercheck.api_conformance_test(
+            PETSTORE_SCHEMA_PATH, cont_on_err=False
+        )
 
     @responses.activate
     def test_openapi_uber(self):
@@ -316,7 +350,8 @@ class MultiRequestTestCase(unittest.TestCase):
         get_strategy = get_operation.parameters_strategy(my_val_factory)
 
         @hypothesis.settings(
-            max_examples=50, suppress_health_check=[hypothesis.HealthCheck.too_slow]
+            max_examples=50,
+            suppress_health_check=[hypothesis.HealthCheck.too_slow],
         )
         @hypothesis.given(put_strategy, get_strategy)
         def single_operation_test(
@@ -324,7 +359,9 @@ class MultiRequestTestCase(unittest.TestCase):
         ):
             """PUT an app, then get it again."""
             result = client.request(put_operation, put_params)
-            assert result.status in put_operation.response_codes, "{} not in {}".format(
+            assert (
+                result.status in put_operation.response_codes
+            ), "{} not in {}".format(
                 result.status, put_operation.response_codes
             )
 
@@ -335,7 +372,9 @@ class MultiRequestTestCase(unittest.TestCase):
             # may contain NAN, instances of which are not equal to one another.
             out_data = json.dumps(result.body.data, sort_keys=True)
             in_data = json.dumps(put_params["payload"]["data"], sort_keys=True)
-            assert out_data == in_data, "{!r} != {!r}".format(out_data, in_data)
+            assert out_data == in_data, "{!r} != {!r}".format(
+                out_data, in_data
+            )
 
         single_operation_test(
             client, put_operation, get_operation

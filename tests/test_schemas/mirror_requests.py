@@ -15,7 +15,11 @@ example_ns = api.namespace("example", description="Example operations")
 
 ExampleObj = api.model(
     "Example",
-    {"in_str": fields.String(required=True, description="your str", example="exs")},
+    {
+        "in_str": fields.String(
+            required=True, description="your str", example="exs"
+        )
+    },
 )
 
 

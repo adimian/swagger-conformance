@@ -31,7 +31,11 @@ class Operation:
 
     def __repr__(self):
         return "{}(id={!r}, method={!r}, path={!r}, params={!r})".format(
-            self.__class__.__name__, self.id, self.method, self.path, self._parameters
+            self.__class__.__name__,
+            self.id,
+            self.method,
+            self.path,
+            self._parameters,
         )
 
     def parameters_strategy(self, value_factory):
@@ -99,10 +103,14 @@ class Operation:
         # If only that value is specified, assume that any successful response
         # code is allowed.
         self._response_codes = {
-            int(code) for code in self._operation.responses if code != "default"
+            int(code)
+            for code in self._operation.responses
+            if code != "default"
         }
         if len(self._response_codes) == 0:
-            assert "default" in self._operation.responses, "No response codes at all"
+            assert (
+                "default" in self._operation.responses
+            ), "No response codes at all"
             log.warning("Only 'default' response defined - allowing any 2XX")
             self._response_codes = set(range(200, 300))
         if all((x > 299 or x < 200) for x in self._response_codes):

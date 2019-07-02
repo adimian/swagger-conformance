@@ -47,7 +47,11 @@ class IntColourField(fields.Integer):
 # Specifications of the objects accepted/returned by the API.
 IdModel = api.model(
     "IdModel",
-    {"id": fields.Integer(required=True, description="Id number", example=123456)},
+    {
+        "id": fields.Integer(
+            required=True, description="Id number", example=123456
+        )
+    },
 )
 HexColourModel = api.model(
     "HexColourModel",

@@ -127,6 +127,8 @@ def merge_dicts_max_size_strategy(dict1, dict2, max_size):
     # second containing a reduced number of keys if that would take us over the
     # max size.
     result = hy_st.builds(
-        lambda x, y: dict((list(x.items()) + list(y.items()))[:max_size]), dict1, dict2
+        lambda x, y: dict((list(x.items()) + list(y.items()))[:max_size]),
+        dict1,
+        dict2,
     )
     return result

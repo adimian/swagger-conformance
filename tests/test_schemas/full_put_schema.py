@@ -30,8 +30,12 @@ ExampleObj = api.model(
             description="Raw data",
             example={"any_data": "you_like_goes_here"},
         ),
-        "whole": fields.Integer(required=True, description="number data", example=1234),
-        "real": fields.Float(required=True, description="real data", example=123.456),
+        "whole": fields.Integer(
+            required=True, description="number data", example=1234
+        ),
+        "real": fields.Float(
+            required=True, description="real data", example=123.456
+        ),
         "data": fields.String(
             required=True, description="String data", example="Some string"
         ),
@@ -50,7 +54,9 @@ ExampleObj = api.model(
             enum=["A", "B", "C", "D"],
             example="C",
         ),
-        "truthy": fields.Boolean(required=True, description="Bool data", example=True),
+        "truthy": fields.Boolean(
+            required=True, description="Bool data", example=True
+        ),
         "list": fields.List(
             fields.String,
             required=True,
@@ -61,7 +67,9 @@ ExampleObj = api.model(
             required=True, description="ISO date", example="1990-12-31"
         ),
         "isodt": fields.DateTime(
-            required=True, description="ISO datetime", example="1985-04-12T23:20:50.52Z"
+            required=True,
+            description="ISO datetime",
+            example="1985-04-12T23:20:50.52Z",
         ),
     },
 )

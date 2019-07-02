@@ -42,7 +42,9 @@ def api_conformance_test(
         )
         sys.exit(1)
 
-    print(Fore.BLUE + "Swagger client... " + Fore.GREEN + " ok" + Style.RESET_ALL)
+    print(
+        Fore.BLUE + "Swagger client... " + Fore.GREEN + " ok" + Style.RESET_ALL
+    )
 
     fd, watchdog_filename = tempfile.mkstemp()
     os.close(fd)
@@ -51,7 +53,11 @@ def api_conformance_test(
     for operation in client.api.operations():
         try:
             operation_conformance_test(
-                client, operation, num_tests_per_op, cont_on_err, watchdog_filename
+                client,
+                operation,
+                num_tests_per_op,
+                cont_on_err,
+                watchdog_filename,
             )
         except ValueError as exc:
             print(

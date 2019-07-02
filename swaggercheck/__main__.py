@@ -30,12 +30,19 @@ def main():
         help="continue on error",
     )
 
-    parser.add_argument("-u", "--username", help="username (implies 'basic' auth)")
-    parser.add_argument("-p", "--password", help="password (implies 'basic' auth)")
-    parser.add_argument("-k", "--token", help="api key token (implies 'apiKey' auth)")
+    parser.add_argument(
+        "-u", "--username", help="username (implies 'basic' auth)"
+    )
+    parser.add_argument(
+        "-p", "--password", help="password (implies 'basic' auth)"
+    )
+    parser.add_argument(
+        "-k", "--token", help="api key token (implies 'apiKey' auth)"
+    )
 
     parser.add_argument(
-        "--security-name", help="force a security name if not 'basic' or 'apiKey'"
+        "--security-name",
+        help="force a security name if not 'basic' or 'apiKey'",
     )
 
     parsed_args = parser.parse_args()
@@ -51,5 +58,10 @@ def main():
             security_name=parsed_args.security_name,
         )
     except KeyboardInterrupt:
-        print(Fore.WHITE + Back.RED + "Interrupted by user command" + Style.RESET_ALL)
+        print(
+            Fore.WHITE
+            + Back.RED
+            + "Interrupted by user command"
+            + Style.RESET_ALL
+        )
         sys.exit(1)

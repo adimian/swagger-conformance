@@ -68,8 +68,8 @@ class Api:
             if operation is not None:
                 log.debug("Have operation")
 
-                operation._Operation__url = "/" + operation._Operation__url.replace(
-                    "//", "/"
+                operation._Operation__url = (
+                    "/" + operation._Operation__url.replace("//", "/")
                 )
 
                 operations_map[operation_name] = Operation(operation)

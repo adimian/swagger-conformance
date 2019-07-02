@@ -45,7 +45,11 @@ schema_ns = api.namespace("schema", description="This API's schema operations")
 # Specifications of the objects accepted/returned by the API.
 AppName = api.model(
     "App name",
-    {"name": fields.String(required=True, description="App name", example="My App")},
+    {
+        "name": fields.String(
+            required=True, description="App name", example="My App"
+        )
+    },
 )
 
 AppData = api.model(
@@ -159,7 +163,10 @@ def parse_args(raw_args):
         help="the port of the webserver - defaults to 5000",
     )
     parser.add_argument(
-        "--debug", action="store_true", default=False, help="turn on debug logging"
+        "--debug",
+        action="store_true",
+        default=False,
+        help="turn on debug logging",
     )
 
     parsed_args = parser.parse_args(raw_args)
