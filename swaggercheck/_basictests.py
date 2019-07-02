@@ -50,9 +50,18 @@ def api_conformance_test(
     os.remove(watchdog_filename)
 
     for operation in client.api.operations():
-        operation_conformance_test(
-            client, operation, num_tests_per_op, cont_on_err, watchdog_filename
-        )
+        try:
+            operation_conformance_test(
+                client, operation, num_tests_per_op, cont_on_err, watchdog_filename
+            )
+        except ValueError as exc:
+            print(
+                Fore.WHITE
+                + Back.RED
+                + 'Unable to run test: "{}"'.format(str(exc))
+                + Style.RESET_ALL
+            )
+            sys.exit(1)
 
 
 def operation_conformance_test(
