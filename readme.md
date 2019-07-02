@@ -4,6 +4,8 @@ You have a Swagger (aka OpenAPI) schema defining an API you provide - but does y
 
 `swaggercheck` combines the power of `hypothesis` for property based / fuzz testing with `pyswagger` to explore all corners of your API - testing its conformance to its specification.
 
+[![asciicast](https://asciinema.org/a/70ybJ8DqSG5u723GkHe3QMsU5.svg)](https://asciinema.org/a/70ybJ8DqSG5u723GkHe3QMsU5?t=25)
+
 
 ## Swagger-conformance
 
