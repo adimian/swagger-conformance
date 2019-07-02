@@ -25,7 +25,7 @@ _This is not a complete fuzz tester of your HTTP interface e.g. sending complete
 
 ## Installation
 
-    $ pip install swaggercheck
+    $ pip install swagger-check
     
 ## Usage
 
