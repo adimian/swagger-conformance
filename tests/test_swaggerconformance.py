@@ -130,57 +130,6 @@ class BasicConformanceAPITestCase(unittest.TestCase):
     """Tests of the basic conformance testing API itself."""
 
     @responses.activate
-    def test_immediate_failure(self):
-        """An error response code should trigger an immediate assertion."""
-        # Return an error response to all endpoints
-        respond_to_get("/schema")
-        respond_to_get("/apps", status=500)
-        respond_to_get(r"/apps/.+", status=404)
-        respond_to_put(r"/apps/.+", status=204)
-        respond_to_delete(r"/apps/.+", status=204)
-
-        self.assertRaises(
-            AssertionError,
-            swaggercheck.api_conformance_test,
-            TEST_SCHEMA_PATH,
-            cont_on_err=False,
-        )
-
-    @responses.activate
-    def test_deferred_failure(self):
-        """Errors should be counted and reported in a single exception."""
-        # Return an error response to all endpoints
-        respond_to_get("/schema")
-        respond_to_get("/apps", status=500)
-        respond_to_get(r"/apps/.+", status=500)
-        respond_to_put(r"/apps/.+", status=500)
-        respond_to_delete(r"/apps/.+", status=204)
-
-        self.assertRaisesRegex(
-            Exception,
-            r"3 operation\(s\) failed",
-            swaggercheck.api_conformance_test,
-            TEST_SCHEMA_PATH,
-            cont_on_err=True,
-        )
-
-    @responses.activate
-    def test_running_as_module(self):
-        """Running __main__ means errors are reported in a single exception."""
-        from swaggercheck.__main__ import main as dunder_main
-
-        # Return an error response to all endpoints
-        respond_to_get("/schema")
-        respond_to_get("/apps", status=500)
-        respond_to_get(r"/apps/.+", status=500)
-        respond_to_put(r"/apps/.+", status=500)
-        respond_to_delete(r"/apps/.+", status=204)
-
-        self.assertRaisesRegex(
-            Exception, r"3 operation\(s\) failed", dunder_main, [TEST_SCHEMA_PATH]
-        )
-
-    @responses.activate
     def test_content_type_header_with_parameters(self):
         """Content type header parameters should be allowed."""
         content_type_extra = "application/json; charset=utf-8"
@@ -335,50 +284,6 @@ class ExternalExamplesTestCase(unittest.TestCase):
 
         # Now just kick off the validation process.
         swaggercheck.api_conformance_test(UBER_SCHEMA_PATH, cont_on_err=False)
-
-
-class CompareResponsesTestCase(unittest.TestCase):
-    """Tests that values sent on requests can be returned unchanged."""
-
-    @responses.activate
-    def test_get_resp(self):
-        """Test that a GET URL parameter is the same when passed back in the
-        GET response body - i.e. there's no mismatched encode/decode."""
-        url_base = SCHEMA_URL_BASE + "/example/"
-
-        def _request_callback(request):
-            value = request.url[len(url_base) :]
-            # Special characters will be quoted in the URL - unquote them here.
-            value = urllib.parse.unquote_plus(value)
-            return (200, {}, json.dumps({"in_str": value}))
-
-        responses.add_callback(
-            responses.GET,
-            re.compile(url_base),
-            callback=_request_callback,
-            content_type=CONTENT_TYPE_JSON,
-        )
-
-        my_val_factory = swaggercheck.strategies.StrategyFactory()
-        client = swaggercheck.client.Client(MIRROR_REQS_SCHEMA_PATH)
-        operation = client.api.endpoints["/example/{in_str}"]["get"]
-        strategy = operation.parameters_strategy(my_val_factory)
-
-        @hypothesis.settings(
-            max_examples=200, suppress_health_check=[hypothesis.HealthCheck.too_slow]
-        )
-        @hypothesis.given(strategy)
-        def _single_operation_test(client, operation, params):
-            result = client.request(operation, params)
-            assert result.status in operation.response_codes, "{} not in {}".format(
-                result.status, operation.response_codes
-            )
-
-            assert result.body.in_str == params["in_str"], "{} != {}".format(
-                result.body.in_str, params["in_str"]
-            )
-
-        _single_operation_test(client, operation)  # pylint: disable=I0011,E1120
 
 
 class MultiRequestTestCase(unittest.TestCase):
