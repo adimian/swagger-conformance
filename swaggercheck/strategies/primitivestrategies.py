@@ -228,8 +228,16 @@ class HTTPHeaderStringStrategy(StringStrategy):
         )
 
     def strategy(self):
-        # Header values shouldn't have surrounding whitespace.
-        return super().strategy().map(str.strip)
+        def can_latin1_encode(text):
+            try:
+                text.encode("latin-1")
+                return True
+            except UnicodeEncodeError:
+                return False
+
+        # Header values shouldn't have surrounding whitespace, and must
+        # be able to be encoded in latin-1 encoding
+        return super().strategy().filter(can_latin1_encode).map(str.strip)
 
 
 class XFieldsHeaderStringStrategy(PrimitiveStrategy):
