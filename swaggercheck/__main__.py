@@ -1,9 +1,10 @@
-import sys
 import argparse
-
-from swaggercheck import api_conformance_test
+import sys
+from os import environ
 
 from colorama import init, Fore, Style, Back
+
+from swaggercheck import api_conformance_test
 
 init()
 
@@ -47,16 +48,23 @@ def main():
 
     parsed_args = parser.parse_args()
 
+    test_kwargs = {
+        "num_tests_per_op": (
+            parsed_args.num_tests_per_op or environ.get("SC_TESTS")
+        ),
+        "cont_on_err": (
+            parsed_args.cont_on_err or environ.get("SC_CONTINUE_ON_ERROR")
+        ),
+        "username": parsed_args.username or environ.get("SC_BASIC_USERNAME"),
+        "password": parsed_args.password or environ.get("SC_BASIC_PASSWORD"),
+        "token": parsed_args.token or environ.get("SC_API_TOKEN"),
+        "security_name": (
+            parsed_args.security_name or environ.get("SC_SECURITY_NAME")
+        ),
+    }
+
     try:
-        api_conformance_test(
-            parsed_args.schema_path,
-            num_tests_per_op=parsed_args.num_tests_per_op,
-            cont_on_err=parsed_args.cont_on_err,
-            username=parsed_args.username,
-            password=parsed_args.password,
-            token=parsed_args.token,
-            security_name=parsed_args.security_name,
-        )
+        api_conformance_test(parsed_args.schema_path, **test_kwargs)
     except KeyboardInterrupt:
         print(
             Fore.WHITE

@@ -4,7 +4,7 @@ You have a Swagger (aka OpenAPI) schema defining an API you provide - but does y
 
 `swaggercheck` combines the power of `hypothesis` for property based / fuzz testing with `pyswagger` to explore all corners of your API - testing its conformance to its specification.
 
-[![asciicast](https://asciinema.org/a/70ybJ8DqSG5u723GkHe3QMsU5.svg)](https://asciinema.org/a/70ybJ8DqSG5u723GkHe3QMsU5?t=25)
+[![asciicast](https://asciinema.org/a/256786.svg)](https://asciinema.org/a/256786)
 
 
 ## Swagger-conformance
@@ -31,18 +31,33 @@ _This is not a complete fuzz tester of your HTTP interface e.g. sending complete
 
 After setup, the simplest test you can run against your API is just the following from the command line:
 
-```bash
-swaggercheck 'http://example.com/api/schema.json'
-```
+
+    $ swaggercheck http://example.com/api/schema.json
+
 
 where the URL should resolve to your swagger schema, or it can be a path to the file on disk.
 
-## Wait, I don't get it, what does this thing do?
+### Configuration
+
+| **CLI argument** | **Environment variable** | **Default** | **Description** |
+| --- | --- | --- | --- |
+| `-n N` | `SC_TESTS` | 20 | Number of tests per endpoint |
+| `-c / --continue-on-error` (flag) | `SC_CONTINUE_ON_ERROR` | false | Keep testing endpoints even if one test breaks |
+| `-u username` | `SC_BASIC_USERNAME` |  | Username to use over `basic` authentication |
+| `-p password` | `SC_BASIC_PASSWORD` |  | Password to use over `basic` authentication |
+| `-k` | `SC_API_TOKEN` | | Token to use over `apiKey` authentication |
+| `-security-name name` | `SC_SECURITY_NAME` | | force a security scheme if not `basic` or `apiKey` |
+
+**Note: ** CLI arguments take precedence over Environment variables
+
+## FAQ
+
+### Wait, I don't get it, what does this thing do?
 
 In short, it lets you generate example values for parameters to your Swagger API operations, make API requests using these values, and verify the responses.
 
 
-## SSL certificate errors
+### SSL certificate errors
 
 If the command crashes with the following error:
 `Unable to connect Swagger client: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed (_ssl.c:847)>` and you are using Python3.6 on MacOSX, you might be interested in the following StackOverflow thread: https://stackoverflow.com/a/42334357
