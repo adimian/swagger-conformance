@@ -2,6 +2,10 @@
 
 You have a Swagger (aka OpenAPI) schema defining an API you provide - but does your API really conform to that schema, and does it correctly handle all valid inputs?
 
+[![Build Status](https://travis-ci.org/adimian/swagger-check.svg?branch=master)](https://travis-ci.org/adimian/swagger-check)
+[![PyPI version](https://badge.fury.io/py/swagger-check.svg)](https://badge.fury.io/py/swagger-check)
+
+
 `swaggercheck` combines the power of `hypothesis` for property based / fuzz testing with `pyswagger` to explore all corners of your API - testing its conformance to its specification.
 
 [![asciicast](https://asciinema.org/a/256786.svg)](https://asciinema.org/a/256786)
