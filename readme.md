@@ -48,7 +48,7 @@ where the URL should resolve to your swagger schema, or it can be a path to the 
 | `-k` | `SC_API_TOKEN` | | Token to use over `apiKey` authentication |
 | `-security-name name` | `SC_SECURITY_NAME` | | force a security scheme if not `basic` or `apiKey` |
 
-**Note: ** CLI arguments take precedence over Environment variables
+**Note:** CLI arguments take precedence over Environment variables
 
 ## FAQ
 
