@@ -72,6 +72,9 @@ def api_conformance_test(
 def operation_conformance_test(
     client, operation, num_tests, cont_on_err, watchdog_filename
 ):
+    success = "\t[" + Fore.GREEN + " ok " + Style.RESET_ALL + "] "
+    failed = "\t[" + Fore.RED + " fail " + Style.RESET_ALL + "] "
+    skip = "\t[" + Fore.MAGENTA + " skip " + Style.RESET_ALL + "] "
 
     print(
         Fore.BLUE
@@ -84,6 +87,12 @@ def operation_conformance_test(
         + operation.path
         + Style.RESET_ALL
     )
+
+    for name, op in operation._parameters.items():
+        if not op.type:
+            print(skip + "unsupported input type for '{}'".format(name))
+            return
+
     strategy = operation.parameters_strategy(StrategyFactory())
 
     @hypothesis.settings(
@@ -96,8 +105,6 @@ def operation_conformance_test(
     def single_operation_test(
         client, operation, cont_on_err, watchdog_filename, params
     ):
-        success = "\t[" + Fore.GREEN + " ok " + Style.RESET_ALL + "] "
-        failed = "\t[" + Fore.RED + " fail " + Style.RESET_ALL + "] "
 
         root = "Testing with params: {}".format(params) + Style.RESET_ALL
         result = client.request(operation, params)

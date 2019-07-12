@@ -66,8 +66,6 @@ class StrategyFactory:
         }
 
     def _get(self, type_str, format_str):
-        if not type_str:
-            type_str = "object"
         return self._map[type_str][format_str]
 
     def _set(self, type_str, format_str, creator):
