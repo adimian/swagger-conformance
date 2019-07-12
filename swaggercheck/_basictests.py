@@ -90,7 +90,11 @@ def operation_conformance_test(
 
     for name, op in operation._parameters.items():
         if not op.type:
-            print(skip + "unsupported input type for '{}'".format(name))
+            url = "https://github.com/adimian/swagger-check/labels/types%20support"
+            print(
+                skip
+                + "unsupported input type for '{}'. See {}".format(name, url)
+            )
             return
 
     strategy = operation.parameters_strategy(StrategyFactory())
