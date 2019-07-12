@@ -13,6 +13,7 @@ deploy:
   user: adimian
   provider: pypi
   on:
+    tags: true
     branch: master
   password:
     secure: XgYEqaPP8yyGRcj/Iha5LSd5+s2m+Rer9W8ZV4gAI7F4dcJv3tXpoYYrH1YqYRGHzlNJ9zoeHk/x2CKdUB8KYOr/o0bVK4QN/XUoFInSB64kNZx5qWxx8SJQGpVPeCHzgmmI+khsZeyd5Meo2Tl+Pp/lRuwx8XgBY3jFqtglNrgdol0U95TqOO53cOeZvnAW9nAr+yVog6l5Z/6aLpo6mJXcKo2DrnyYoUubj7ymGXTp2sQNtbwx3JmcFolfICPGEVQ3E+iB8zZifYkGftfyLpcPxvMBmG0ZqYwCQLilQQznQyYISfGISbQ9aol2P1auPsnoK7j/EuUP/dykbwKp3gbM/w6r0tduUVNWguKUKW24j/Utv47aeS5sUOLXdiY6jIoEBQ8NyOO0eaL6sqI+SJUpRcdHPFgCmVg7nqZqrJbGYrKtsGRt1++bj5BRyr7op7XL26DqpWqpha1xEthBbnOsHMXyQv1/LFPof3AQomFaf3T8tlMkmbH/G6MQ8quilxirtKEotIRAW3MfSCgB22Y4PxkVvsFOjTV2oeEcQd5UbiHHfeZVpE7zR2MTP5MSAxCYrBQXnvkK8ygWcKJXJBj8T7Q9Q/8zgBPa9BoxWN3kdIvvcTI5KdZH8N70EoGU9XQD8BDAeW+hk/Gik8YSJYtkDjpjdlSShR2lFkyN9gI=
