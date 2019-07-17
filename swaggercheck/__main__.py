@@ -46,6 +46,8 @@ def main():
         help="force a security name if not 'basic' or 'apiKey'",
     )
 
+    parser.add_argument("-e", "--extra-header", action="append")
+
     parsed_args = parser.parse_args()
 
     test_kwargs = {
@@ -62,6 +64,17 @@ def main():
             parsed_args.security_name or environ.get("SC_SECURITY_NAME")
         ),
     }
+
+    extra_headers = {}
+    if parsed_args.extra_header is not None:
+        for header_pair in parsed_args.extra_header:
+            if ":" not in header_pair:
+                raise ValueError("header must be in the form HEADER:VALUE")
+            header, value = header_pair.split(":")
+            extra_headers[header] = value
+
+        if extra_headers:
+            test_kwargs["extra_headers"] = extra_headers
 
     try:
         api_conformance_test(parsed_args.schema_path, **test_kwargs)

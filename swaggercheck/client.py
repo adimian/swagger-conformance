@@ -38,7 +38,12 @@ class Client:
         password=None,
         token=None,
         security_name=None,
+        extra_headers=None,
     ):
+        if extra_headers is None:
+            extra_headers = {}
+        self.extra_headers = extra_headers
+
         self._schema_path = schema_path
 
         self._username = username
@@ -66,6 +71,12 @@ class Client:
 
         self._api = Api(self)
 
+        security = Security(self._app)
+        if self._auth_creds:
+            security.update_with(*self._auth_creds)
+
+        self.client = PyswaggerClient(security)
+
     def __repr__(self):
         return "{}(schema_path={!r})".format(
             self.__class__.__name__, self._schema_path
@@ -89,13 +100,9 @@ class Client:
 
         :rtype: pyswagger.io.Response
         """
-        security = Security(self._app)
-        if self._auth_creds:
-            security.update_with(*self._auth_creds)
-        client = PyswaggerClient(security)
-
-        result = client.request(
-            operation._pyswagger_operation(**parameters)
+        result = self.client.request(
+            req_and_resp=operation._pyswagger_operation(**parameters),
+            headers=self.extra_headers,
         )  # pylint: disable=protected-access
 
         return Response(result)

@@ -18,6 +18,7 @@ def api_conformance_test(
     password=None,
     token=None,
     security_name=None,
+    extra_headers=None,
 ):
 
     init()
@@ -31,6 +32,7 @@ def api_conformance_test(
             password=password,
             token=token,
             security_name=security_name,
+            extra_headers=extra_headers,
         )
     except URLError as exc:
         print(

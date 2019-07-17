@@ -33,6 +33,10 @@ _This is not a complete fuzz tester of your HTTP interface e.g. sending complete
     
 ## Usage
 
+**Warning:** this tool is going to send realistic queries to your API. If your API isn't read-only, it **will** blindly update/delete data. 
+You should never run this tool on a production server with a privileged user.
+If you still want to, you may want to catch special headers (see `--extra-header` argument) in your application code so there is no side effect.
+
 After setup, the simplest test you can run against your API is just the following from the command line:
 
 
@@ -40,6 +44,12 @@ After setup, the simplest test you can run against your API is just the followin
 
 
 where the URL should resolve to your swagger schema, or it can be a path to the file on disk.
+
+### Extra headers
+
+You can send extra headers to your API, for example to set your application in dry-run mode (thus avoiding swaggercheck to run DELETE requests on your live application). This can be done through the `--extra-header` argument:
+
+    $ swaggercheck http://example.com/api/schema.json --extra-header foo:bar --extra-header 'X-Persistence-Mode:dry-run'
 
 ### Configuration
 
@@ -51,6 +61,7 @@ where the URL should resolve to your swagger schema, or it can be a path to the 
 | `-p password` | `SC_BASIC_PASSWORD` |  | Password to use over `basic` authentication |
 | `-k` | `SC_API_TOKEN` | | Token to use over `apiKey` authentication |
 | `-security-name name` | `SC_SECURITY_NAME` | | force a security scheme if not `basic` or `apiKey` |
+| `-e / --extra-header` | - | | send additional headers during the request |
 
 **Note:** CLI arguments take precedence over Environment variables
 
