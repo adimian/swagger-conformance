@@ -115,17 +115,25 @@ def operation_conformance_test(
         root = "Testing with params: {}".format(params) + Style.RESET_ALL
         result = client.request(operation, params)
 
+        status_code = (
+            "[ "
+            + Fore.MAGENTA
+            + "{}".format(result.status)
+            + Style.RESET_ALL
+            + " ] "
+        )
+
         if result.status in operation.response_codes:
-            print(success + root)
+            print(success + status_code + root)
         else:
             outcome = (
                 Fore.RED
-                + "\n\tresponse code {} not in {}".format(
+                + "\n\tResponse code {} not in documented codes: {}".format(
                     result.status, operation.response_codes
                 )
                 + Style.RESET_ALL
             )
-            print(failed + root + outcome)
+            print(failed + status_code + root + outcome)
             if not cont_on_err:
                 # we use a file as a signal between inside and outside of
                 # hypothesis since otherwise we'd see hypothesis extended help
