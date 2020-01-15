@@ -48,6 +48,14 @@ def api_conformance_test(
         Fore.BLUE + "Swagger client... " + Fore.GREEN + " ok" + Style.RESET_ALL
     )
 
+    method = " authenticated"
+    if username is None and password is None:
+        method = " basic"
+
+    print(
+        Fore.BLUE + "Authentication method : " + Fore.GREEN + method + Style.RESET_ALL
+    )
+
     fd, watchdog_filename = tempfile.mkstemp()
     os.close(fd)
     os.remove(watchdog_filename)
