@@ -48,9 +48,9 @@ def api_conformance_test(
         Fore.BLUE + "Swagger client... " + Fore.GREEN + " ok" + Style.RESET_ALL
     )
 
-    method = " authenticated"
-    if username is None and password is None:
-        method = " basic"
+    method = " basic"
+    if username is not None and password is not None:
+        method = " authenticated"
 
     print(
         Fore.BLUE + "Authentication method : " + Fore.GREEN + method + Style.RESET_ALL
