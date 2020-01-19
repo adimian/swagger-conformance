@@ -32,6 +32,14 @@ def main():
     )
 
     parser.add_argument(
+        "-v",
+        "--verbose",
+        dest="get_report",
+        action="store_true",
+        help="get a report after the execution",
+    )
+
+    parser.add_argument(
         "-u", "--username", help="username (implies 'basic' auth)"
     )
     parser.add_argument(
@@ -56,6 +64,9 @@ def main():
         ),
         "cont_on_err": (
             parsed_args.cont_on_err or environ.get("SC_CONTINUE_ON_ERROR")
+        ),
+        "get_report": (
+            parsed_args.get_report or environ.get("SC_GET_REPORT")
         ),
         "username": parsed_args.username or environ.get("SC_BASIC_USERNAME"),
         "password": parsed_args.password or environ.get("SC_BASIC_PASSWORD"),
