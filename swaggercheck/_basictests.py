@@ -14,6 +14,7 @@ def api_conformance_test(
     schema_path,
     num_tests_per_op=20,
     cont_on_err=True,
+    get_report=True,
     username=None,
     password=None,
     token=None,
@@ -22,6 +23,7 @@ def api_conformance_test(
 ):
 
     init()
+    log_filename = "log.txt"
 
     print(Fore.BLUE + "Connecting to {}".format(schema_path) + Style.RESET_ALL)
 
@@ -59,6 +61,8 @@ def api_conformance_test(
     fd, watchdog_filename = tempfile.mkstemp()
     os.close(fd)
     os.remove(watchdog_filename)
+    if os.path.isfile(log_filename):
+        os.remove(log_filename)
 
     for operation in client.api.operations():
         try:
@@ -68,6 +72,8 @@ def api_conformance_test(
                 num_tests_per_op,
                 cont_on_err,
                 watchdog_filename,
+                get_report,
+                log_filename,
             )
         except ValueError as exc:
             print(
@@ -78,9 +84,68 @@ def api_conformance_test(
             )
             sys.exit(1)
 
+    if get_report:
+        with open(log_filename, "r") as myfile:
+            dic = {}
+            nb_error = 0
+            first = True
+            for line in myfile:
+                line = line.split(" ")
+                line[-1] = line[-1].split("\n")[0]
+                if line[0] == "test":
+                    if not first:
+                        print_report(dic, nb_error)
+                        dic = {}
+                        nb_error = 0
+
+                    print(
+                        Fore.BLUE
+                        + "\n["
+                        + Fore.YELLOW
+                        + line[1]
+                        + Fore.BLUE
+                        + "] "
+                        + Fore.CYAN
+                        + line[2]
+                        + Style.RESET_ALL
+                    )
+                    first = False
+
+                elif line[0] == "ok":
+                    if line[1] not in dic:
+                        dic[line[1]] = 1
+                    else:
+                        dic[line[1]] += 1
+
+                elif line[0] == "fail":
+                    dic[nb_error] = line[1] + "\t" + line[2]
+
+            print_report(dic, nb_error)
+
+
+def print_report(dic, nb_error):
+    for k, v in dic.items():
+        if isinstance(k, str):
+            print(
+                "[ SUCCESS "
+                + Fore.MAGENTA
+                + "Code: {0} \ttests : {1}".format(k, v)
+                + Style.RESET_ALL
+                + " ] "
+            )
+    for i in range(0, nb_error):
+        tmp = dic[i].split("\t")
+        print(
+            "[ FAIL "
+            + Fore.RED
+            + "\n\tResponse code {} not in documented codes: {}".format(tmp[0], tmp[1])
+            + Style.RESET_ALL
+            + " ] "
+        )
+
 
 def operation_conformance_test(
-    client, operation, num_tests, cont_on_err, watchdog_filename
+    client, operation, num_tests, cont_on_err, watchdog_filename, get_report, log_filename
 ):
     success = "\t[" + Fore.GREEN + " ok " + Style.RESET_ALL + "] "
     failed = "\t[" + Fore.RED + " fail " + Style.RESET_ALL + "] "
@@ -97,6 +162,10 @@ def operation_conformance_test(
         + operation.path
         + Style.RESET_ALL
     )
+
+    if get_report:
+        with open(log_filename, "a+") as myfile:
+            myfile.write("test [" + str(operation.method) + "] " + operation.path + "\n")
 
     for name, op in operation._parameters.items():
         if not op.type:
@@ -117,9 +186,8 @@ def operation_conformance_test(
     )
     @hypothesis.given(strategy)
     def single_operation_test(
-        client, operation, cont_on_err, watchdog_filename, params
+        client, operation, cont_on_err, get_report, log_filename, watchdog_filename, params
     ):
-
         root = "Testing with params: {}".format(params) + Style.RESET_ALL
         result = client.request(operation, params)
 
@@ -133,6 +201,9 @@ def operation_conformance_test(
 
         if result.status in operation.response_codes:
             print(success + status_code + root)
+            if get_report:
+                with open(log_filename, "a+") as myfile:
+                    myfile.write("ok " + str(result.status) + "\n")
         else:
             outcome = (
                 Fore.RED
@@ -142,6 +213,10 @@ def operation_conformance_test(
                 + Style.RESET_ALL
             )
             print(failed + status_code + root + outcome)
+            if get_report:
+                with open(log_filename, "a+") as myfile:
+                    myfile.write("failed " + str(result.status) + " " + str(operation.response_codes) + "\n")
+
             if not cont_on_err:
                 # we use a file as a signal between inside and outside of
                 # hypothesis since otherwise we'd see hypothesis extended help
@@ -149,7 +224,7 @@ def operation_conformance_test(
                 with open(watchdog_filename, "w"):
                     pass
 
-    single_operation_test(client, operation, cont_on_err, watchdog_filename)
+    single_operation_test(client, operation, cont_on_err, get_report, log_filename, watchdog_filename)
 
     if os.path.isfile(watchdog_filename):
         print(Fore.RED + "Stopping after first failure" + Style.RESET_ALL)
